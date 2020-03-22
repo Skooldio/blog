@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Image Classification with TensorFlow.js</title>
+  <style>
+    body { 
+      text-align: center;
+    }
+    img {
+      border-bottom: 8px solid #ffffff;
+      padding-bottom: 6px;
+      cursor: pointer;
+      width: 224; 
+    }
+    img.selected {
+      border-bottom: 8px solid #F1AD46;
+    }
+    #resultContainer { 
+      width: 50%;
+      margin: 0 auto; 
+    }
+    table { 
+      border-spacing: 0;
+      width: 100%;
+      font-family: sans-serif;
+      font-size: 16px;
+      text-align: left;
+      vertical-align: middle;
+      margin-top: 32px;
+      line-height: 1.5em;
+    }
+    th {
+      border-bottom: 2px solid #999;
+    }
+    td {
+      border-bottom: 1px solid #ddd;
+    }
+    .hidden {
+      display: none; 
+    }
+  </style>
+</head>
+<body>
+  <img src="example1.JPG" width=224/>
+  <img src="example2.JPG" width=224/>
+  <img src="example3.JPG" width=224/>
+  <img src="example4.JPG" width=224/>
+  <img src="example5.JPG" width=224/>
+  <div id="resultContainer">
+    <table id="result" class="hidden">
+      <thead><th>Class</th><th>Probability</th></thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  
+  
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
+  <script>
+    const images = document.querySelectorAll('img'); 
+    let selectedImg = document.querySelector('img'); 
+    [...images].forEach(img => {
+      img.onclick = async () => {
+        selectedImg.className = '';
+        selectedImg = img; 
+        await update(selectedImg); 
+      }
+    });
+    
+    let model; 
+    async function update(img) { 
+      if (!model) {
+        model = await mobilenet.load();
+        document.querySelector('#result').className = ''; 
+      } 
+      const predictions = await model.classify(img, 5); 
+      const tbody = document.querySelector('#result tbody');
+      tbody.innerHTML = '';
+      predictions.map((d) => tbody.innerHTML += `
+        <tr>
+          <td>${d.className}</td> 
+          <td>${(d.probability * 100).toFixed(2)}%</td>
+        </tr>
+      `);
+      img.className = 'selected';
+    }
+
+    update(selectedImg); 
+  </script>
+</body>
+</html>
