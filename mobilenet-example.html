@@ -78,7 +78,7 @@
       const predictions = await model.classify(img, 5); 
       const tbody = document.querySelector('#result tbody');
       tbody.innerHTML = '';
-      predictions.map((d) => tbody.innerHTML += `
+      predictions.forEach((d) => tbody.innerHTML += `
         <tr>
           <td>${d.className}</td> 
           <td>${(d.probability * 100).toFixed(2)}%</td>
